@@ -25,7 +25,7 @@ public class PacketListener {
             @Override
             public void onPacketSending(PacketEvent event) {
                 Set<EnumWrappers.PlayerInfoAction> actions = event.getPacket().getPlayerInfoActions().read(0);
-                if (!actions.contains(EnumWrappers.PlayerInfoAction.ADD_PLAYER)) return;
+                if (!actions.contains(EnumWrappers.PlayerInfoAction.ADD_PLAYER) && !actions.contains(EnumWrappers.PlayerInfoAction.UPDATE_DISPLAY_NAME)) return;
                 boolean bShowAfkTagOverHeads = Constants.config.getBoolean("show-afk-tag-over-heads");
                 List<PlayerInfoData> newPlayerInfoDataList = new ArrayList<>();
                 List<PlayerInfoData> playerInfoDataList = event.getPacket().getPlayerInfoDataLists().read(1);

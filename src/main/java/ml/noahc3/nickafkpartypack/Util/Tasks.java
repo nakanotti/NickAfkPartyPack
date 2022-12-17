@@ -19,7 +19,11 @@ public class Tasks {
         PlayerInfoData pid = new PlayerInfoData(WrappedGameProfile.fromPlayer(player), 1, EnumWrappers.NativeGameMode.SURVIVAL, WrappedChatComponent.fromText("..."));
 
         WrapperPlayServerPlayerInfo updatePacket = new WrapperPlayServerPlayerInfo();
-        updatePacket.setAction(EnumSet.of(EnumWrappers.PlayerInfoAction.ADD_PLAYER));
+        EnumSet<EnumWrappers.PlayerInfoAction> actions = EnumSet.of(
+            EnumWrappers.PlayerInfoAction.ADD_PLAYER,
+            EnumWrappers.PlayerInfoAction.UPDATE_LISTED,
+            EnumWrappers.PlayerInfoAction.UPDATE_DISPLAY_NAME);
+        updatePacket.setAction(actions);
         updatePacket.setData(Collections.singletonList(pid));
 
         for(Player p : Bukkit.getOnlinePlayers())
