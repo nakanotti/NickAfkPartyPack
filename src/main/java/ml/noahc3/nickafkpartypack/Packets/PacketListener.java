@@ -13,7 +13,6 @@ import ml.noahc3.nickafkpartypack.Util.Tasks;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -30,8 +29,9 @@ public class PacketListener {
                 List<PlayerInfoData> newPlayerInfoDataList = new ArrayList<>();
                 List<PlayerInfoData> playerInfoDataList = event.getPacket().getPlayerInfoDataLists().read(1);
                 for (PlayerInfoData pid : playerInfoDataList) {
-                    PlayerInfoData newPid = null;
-                    WrappedGameProfile profile = pid != null ? pid.getProfile() : null;
+                    if (pid == null) continue;
+                    WrappedGameProfile profile = pid.getProfile();
+                    PlayerInfoData newPid = pid;
                     if (profile != null) {
                         Player player = Bukkit.getPlayer(profile.getUUID());
 
@@ -45,7 +45,7 @@ public class PacketListener {
                         newProfile.getProperties().putAll(profile.getProperties());
                         newPid = new PlayerInfoData(newProfile, pid.getLatency(), pid.getGameMode(), WrappedChatComponent.fromText(fullName));
                      }
-                     newPlayerInfoDataList.add(newPid != null ? newPid : pid);
+                     newPlayerInfoDataList.add(newPid);
                 }
                 event.getPacket().getPlayerInfoDataLists().write(1, newPlayerInfoDataList);
             }

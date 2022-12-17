@@ -1,6 +1,5 @@
 package ml.noahc3.nickafkpartypack.Util;
 
-import java.util.EnumSet;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
@@ -13,6 +12,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Collections;
+import java.util.EnumSet;
 
 public class Tasks {
     public static void refreshPlayer(Player player) {

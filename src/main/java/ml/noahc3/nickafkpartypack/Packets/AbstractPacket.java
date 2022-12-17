@@ -1,7 +1,5 @@
 package ml.noahc3.nickafkpartypack.Packets;
 
-import java.lang.reflect.InvocationTargetException;
-
 import org.bukkit.entity.Player;
 
 import com.comphenix.protocol.PacketType;
