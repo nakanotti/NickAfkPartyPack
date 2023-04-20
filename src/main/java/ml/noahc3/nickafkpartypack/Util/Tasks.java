@@ -16,7 +16,9 @@ import java.util.EnumSet;
 
 public class Tasks {
     public static void refreshPlayer(Player player) {
-        PlayerInfoData pid = new PlayerInfoData(WrappedGameProfile.fromPlayer(player), 1, EnumWrappers.NativeGameMode.SURVIVAL, WrappedChatComponent.fromText("..."));
+        PlayerInfoData pid = new PlayerInfoData(WrappedGameProfile.fromPlayer(player),
+            player.getPing(), EnumWrappers.NativeGameMode.fromBukkit(player.getGameMode()),
+            WrappedChatComponent.fromText(player.getName()));
 
         WrapperPlayServerPlayerInfo updatePacket = new WrapperPlayServerPlayerInfo();
         EnumSet<EnumWrappers.PlayerInfoAction> actions = EnumSet.of(
@@ -50,7 +52,7 @@ public class Tasks {
 
     public static boolean setPlayerNick(CommandSender sender, Player player, String nick) {
         if (nick.length() > 16) {
-            sender.sendMessage("Nicknames cannot be longer than 16 characters.");
+            sender.sendMessage("ニックネームは 16 文字以下にしてください。");
             return false;
         }
 
@@ -59,7 +61,7 @@ public class Tasks {
 
         Tasks.refreshPlayer(player);
 
-        sender.sendMessage("Nickname has been set to '" + nick + "'");
+        sender.sendMessage("ニックネームを設定しました。 '" + nick + "'");
 
         return true;
     }
@@ -70,7 +72,7 @@ public class Tasks {
 
         Tasks.refreshPlayer(player);
 
-        sender.sendMessage("Nickname removed.");
+        sender.sendMessage("ニックネームを削除しました。");
     }
 
     public static boolean isPlayerNicked(Player player) {
@@ -87,7 +89,7 @@ public class Tasks {
 
     public static String getPlayerPrefix(Player player) {
         if (player == null || !isPlayerAfk(player)) return "";
-        else return "[AFK] ";
+        else return "[AFK]";
     }
 
     public static void setAfk(Player player, boolean isAfk) {
@@ -103,8 +105,8 @@ public class Tasks {
 
             Tasks.refreshPlayer(player);
 
-            if (isAfk) Bukkit.broadcastMessage(Tasks.getPlayerDisplayName(player) + " is now AFK");
-            else Bukkit.broadcastMessage(Tasks.getPlayerDisplayName(player) + " is no longer AFK");
+            if (isAfk) Bukkit.broadcastMessage(Tasks.getPlayerDisplayName(player) + " 離席中…");
+            else Bukkit.broadcastMessage(Tasks.getPlayerDisplayName(player) + " 復帰。");
         }
     }
 

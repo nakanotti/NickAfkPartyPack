@@ -67,6 +67,11 @@ public class EventListener implements Listener {
 
         updatePlayerStamps(player);
 
+        // 注意：最初のJoinでは、INITIALIZE_CHAT を伴うためTAB表示の更新をスキップしてしまう。
+        // そのため、再度 INITIALIZE_CHAT を行わない形で再更新を行う。
+        // 再帰して永久ループにならない様に注意する事。
+        Tasks.refreshPlayer(player);
+
         try { //this string isnt marked as not nullable and idk why it would be null so imma not deal with it cause if its null then i dont care nothing to replace anyways right
             event.setJoinMessage(event.getJoinMessage().replace(WrappedGameProfile.fromPlayer(player).getName(), Tasks.getPlayerDisplayName(player)));
         } catch (NullPointerException ignored) { }
