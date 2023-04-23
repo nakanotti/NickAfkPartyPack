@@ -17,10 +17,12 @@ import java.util.UUID;
 public class EventListener implements Listener {
 
     private static int SlowTickTaskId;
+    private static boolean bRequestRefresh;
 
     public static void init() {
         SlowTickTaskId = Constants.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(Constants.plugin, EventListener::SlowTick, 100, 10);
         Constants.plugin.getServer().getPluginManager().registerEvents(new EventListener(), Constants.plugin);
+        bRequestRefresh = false;
     }
 
     public static void deinit() {
@@ -41,13 +43,22 @@ public class EventListener implements Listener {
                 updatePlayerStamps(player);
             }
 
+            boolean bUpdate = false;
             if (kickTime >= 0 && now > Constants.afkTimestamps.get(u) + kickTime) {
-                if (player.hasPermission("nickafkpartypack.op.nokick")) continue;
-                player.kickPlayer("You have been AFK for too long.");
+                if (!player.hasPermission("nickafkpartypack.op.nokick")) {
+                    player.kickPlayer("You have been AFK for too long.");
+                    bUpdate = true;
+                }
             } else if (afkTime >= 0 && now > Constants.afkTimestamps.get(u) + afkTime) {
                 Tasks.setAfk(player, true);
+                bUpdate = true;
+            }
+            if (!bUpdate && bRequestRefresh) {
+                // 遅延リフレッシュ
+                Tasks.refreshPlayer(player);
             }
         }
+        bRequestRefresh = false;
     }
 
     @EventHandler (ignoreCancelled = true)
@@ -66,11 +77,6 @@ public class EventListener implements Listener {
         data.remove(Constants.afkKey);
 
         updatePlayerStamps(player);
-
-        // 注意：最初のJoinでは、INITIALIZE_CHAT を伴うためTAB表示の更新をスキップしてしまう。
-        // そのため、再度 INITIALIZE_CHAT を行わない形で再更新を行う。
-        // 再帰して永久ループにならない様に注意する事。
-        Tasks.refreshPlayer(player);
 
         try { //this string isnt marked as not nullable and idk why it would be null so imma not deal with it cause if its null then i dont care nothing to replace anyways right
             event.setJoinMessage(event.getJoinMessage().replace(WrappedGameProfile.fromPlayer(player).getName(), Tasks.getPlayerDisplayName(player)));
@@ -130,5 +136,9 @@ public class EventListener implements Listener {
         Constants.afkTimestamps.remove(player.getUniqueId());
         Constants.playerYaw.remove(player.getUniqueId());
         Constants.playerPitch.remove(player.getUniqueId());
+    }
+
+    public static void requestRefresh() {
+        bRequestRefresh = true;
     }
 }

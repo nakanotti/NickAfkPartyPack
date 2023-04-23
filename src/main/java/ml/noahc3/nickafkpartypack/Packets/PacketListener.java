@@ -10,6 +10,7 @@ import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedProfilePublicKey;
 import com.comphenix.protocol.wrappers.WrappedProfilePublicKey.WrappedProfileKeyData;
+import ml.noahc3.nickafkpartypack.Events.EventListener;
 import ml.noahc3.nickafkpartypack.Util.Constants;
 import ml.noahc3.nickafkpartypack.Util.Tasks;
 import org.bukkit.Bukkit;
@@ -36,7 +37,7 @@ public class PacketListener {
                     // 可能性としては、INITIALIZE_CHAT に対応する署名付きデータが失われているか、正しく送れていない可能性がある。
                     //Bukkit.getLogger().info(actions.toString());
                     //Bukkit.getLogger().info(playerInfoDataList.toString());
-                    //EventListener.postRequestRefresh();
+                    EventListener.requestRefresh(); // 遅延リフレッシュさせる
                     return; // チャットの初期化時は緊急回避
                 }
                 List<PlayerInfoData> newPlayerInfoDataList = new ArrayList<>();
