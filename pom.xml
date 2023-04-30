@@ -6,7 +6,7 @@
 
     <groupId>ml.noahc3</groupId>
     <artifactId>NickAfkPartyPack</artifactId>
-    <version>1.0.4-PREVIEW2</version>
+    <version>1.0.4-PREVIEW3</version>
 
     <repositories>
         <repository>
@@ -36,6 +36,7 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
 </project>
