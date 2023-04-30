@@ -10,6 +10,7 @@ import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedProfilePublicKey;
 import com.comphenix.protocol.wrappers.WrappedProfilePublicKey.WrappedProfileKeyData;
+import com.comphenix.protocol.wrappers.WrappedRemoteChatSessionData;
 import ml.noahc3.nickafkpartypack.Events.EventListener;
 import ml.noahc3.nickafkpartypack.Util.Constants;
 import ml.noahc3.nickafkpartypack.Util.Tasks;
@@ -29,42 +30,28 @@ public class PacketListener {
             public void onPacketSending(PacketEvent event) {
                 Set<EnumWrappers.PlayerInfoAction> actions = event.getPacket().getPlayerInfoActions().read(0);
                 if (!actions.contains(EnumWrappers.PlayerInfoAction.UPDATE_DISPLAY_NAME)) return;
+                final boolean bShowDisplayNameOverHeads = true;
                 final boolean bShowAfkTagOverHeads = Constants.config.getBoolean("show-afk-tag-over-heads");
                 List<PlayerInfoData> playerInfoDataList = event.getPacket().getPlayerInfoDataLists().read(1);
-                if (actions.contains(EnumWrappers.PlayerInfoAction.INITIALIZE_CHAT)) {
-                    // INITIALIZE_CHAT のアクションが含まれる際に、新しい newPlayerInfoDataList を write(1) してしまうと、
-                    // チャットした瞬間に「チャットメッセージの検証に失敗しました。」と、クライアント側が落ちる問題が、1.19.4 から発生。
-                    // 可能性としては、INITIALIZE_CHAT に対応する署名付きデータが失われているか、正しく送れていない可能性がある。
-                    //Bukkit.getLogger().info(actions.toString());
-                    //Bukkit.getLogger().info(playerInfoDataList.toString());
-                    EventListener.requestRefresh(); // 遅延リフレッシュさせる
-                    return; // チャットの初期化時は緊急回避
-                }
                 List<PlayerInfoData> newPlayerInfoDataList = new ArrayList<>();
                 for (PlayerInfoData pid : playerInfoDataList) {
-                    if (pid == null) continue;  // ないはず
+                    if (pid == null) continue;
                     WrappedGameProfile profile = pid.getProfile();
                     PlayerInfoData newPid = pid;
                     if (profile != null) {
-                        UUID uuid = profile.getUUID();
-                        Player player = Bukkit.getPlayer(uuid);
-                        WrappedProfileKeyData key;
-                        try {
-                            key = WrappedProfilePublicKey.ofPlayer(player).getKeyData();
-                        } catch (Exception e) {
-                            //Bukkit.getLogger().info("key = WrappedProfilePublicKey.ofPlayer(player).getKeyData() ... failed.");
-                            //Bukkit.getLogger().info(e.toString());
-                            key = pid.getProfileKeyData();
-                        }
+                        Player player = Bukkit.getPlayer(profile.getUUID());
                         String displayName = Tasks.getPlayerDisplayName(player);
+                        player.setDisplayName(displayName);
                         String prefix = Tasks.getPlayerPrefix(player);
                         String fullName = prefix + displayName;
-                        String headName = bShowAfkTagOverHeads ? fullName : displayName;
-
-                        player.setDisplayName(displayName);
-                        WrappedGameProfile newProfile = profile.withName(Tasks.cropString(headName, 16));
-                        newProfile.getProperties().putAll(profile.getProperties());
-                        newPid = new PlayerInfoData(newProfile, pid.getLatency(), pid.getGameMode(), WrappedChatComponent.fromText(fullName), key);
+                        if (bShowDisplayNameOverHeads) {
+                            String headName = bShowAfkTagOverHeads ? fullName : displayName;
+                            WrappedGameProfile newProfile = profile.withName(Tasks.cropString(headName, 16));
+                            newProfile.getProperties().putAll(profile.getProperties());
+                            profile = newProfile;
+                        }
+                        WrappedRemoteChatSessionData rcsd = pid.getRemoteChatSessionData();
+                        newPid = new PlayerInfoData(pid.getProfileId(), pid.getLatency(), pid.isListed(), pid.getGameMode(), profile, WrappedChatComponent.fromText(fullName), rcsd);
                      }
                      newPlayerInfoDataList.add(newPid);
                 }
