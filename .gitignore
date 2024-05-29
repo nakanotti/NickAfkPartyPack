@@ -5,6 +5,7 @@
 .settings
 .settings/
 .project
+.vscode
 
 # ignore intellij stuff
 .idea
