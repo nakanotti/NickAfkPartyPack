@@ -1,5 +1,6 @@
 package ml.noahc3.nickafkpartypack.Util;
 
+import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
@@ -15,7 +16,31 @@ import java.util.Collections;
 import java.util.EnumSet;
 
 public class Tasks {
-    public static void refreshPlayer(Player player) {
+
+    @Deprecated
+    public static void refreshPlayerOrg(Player player) {
+        PlayerInfoData pid = new PlayerInfoData(WrappedGameProfile.fromPlayer(player), 1, EnumWrappers.NativeGameMode.SURVIVAL, WrappedChatComponent.fromText("..."));
+
+        WrapperPlayServerPlayerInfo remPacket = new WrapperPlayServerPlayerInfo();
+
+        final EnumWrappers.PlayerInfoAction remove = EnumWrappers.PlayerInfoAction.REMOVE_PLAYER;
+        remPacket.setActionOrg(remove);
+        remPacket.setDataOrg(Collections.singletonList(pid));
+
+        WrapperPlayServerPlayerInfo addPacket = new WrapperPlayServerPlayerInfo();
+        addPacket.setActionOrg(EnumWrappers.PlayerInfoAction.ADD_PLAYER);
+        addPacket.setDataOrg(Collections.singletonList(pid));
+
+        for(Player p : Bukkit.getOnlinePlayers())
+        {
+            p.hidePlayer(Constants.plugin, player);
+            remPacket.sendPacket(p);
+            p.showPlayer(Constants.plugin, player);
+            addPacket.sendPacket(p);
+        }
+    }
+
+    public static void refreshPlayer_1_19_3(Player player) {
         PlayerInfoData pid = new PlayerInfoData(WrappedGameProfile.fromPlayer(player),
             player.getPing(), EnumWrappers.NativeGameMode.fromBukkit(player.getGameMode()),
             WrappedChatComponent.fromText(player.getName()));
@@ -25,7 +50,7 @@ public class Tasks {
             EnumWrappers.PlayerInfoAction.ADD_PLAYER,
             EnumWrappers.PlayerInfoAction.UPDATE_LISTED,
             EnumWrappers.PlayerInfoAction.UPDATE_DISPLAY_NAME);
-        updatePacket.setAction(actions);
+        updatePacket.setActions(actions);
         updatePacket.setData(Collections.singletonList(pid));
 
         for(Player p : Bukkit.getOnlinePlayers())
@@ -33,6 +58,14 @@ public class Tasks {
             p.hidePlayer(Constants.plugin, player);
             updatePacket.sendPacket(p);
             p.showPlayer(Constants.plugin, player);
+        }
+    }
+
+    public static void refreshPlayer(Player player) {
+        if (MinecraftVersion.FEATURE_PREVIEW_UPDATE.atOrAbove()) { // 1.19.3 以降
+            refreshPlayer_1_19_3(player);
+        } else {
+            refreshPlayerOrg(player);
         }
     }
 

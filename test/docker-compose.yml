@@ -1,13 +1,9 @@
-version: "3"
-
 services:
   mc:
     container_name: test
     image: itzg/minecraft-server
-    dns:
-      - 8.8.8.8
     ports:
-      - 25599:25565
+      - 25565:25565
     volumes:
       - "./data:/data"
       - "./plugins:/plugins"
@@ -21,6 +17,7 @@ services:
       # Server
       EULA: "TRUE"
       TYPE: "PAPER"
+      VERSION: "1.20.4"
       # MODS
       MODS: "https://ci.dmulloy2.net/job/ProtocolLib/lastSuccessfulBuild/artifact/build/libs/ProtocolLib.jar"
       #MODS_FILE: "/plugins/mods.txt"
@@ -52,10 +49,11 @@ services:
       MODE: "creative"
       PVP: "true"
       LEVEL: "world"
-      LEVEL_TYPE: "default"
+      LEVEL_TYPE: "normal"
       ONLINE_MODE: "TRUE"
       ALLOW_FLIGHT: "TRUE"
       # Resource Pack
       RESOURCE_PACK_ENFORCE: "FALSE"
       RESOURCE_PACK: ""
       RESOURCE_PACK_SHA1: ""
+      ENFORCE_SECURE_PROFILE: "FALSE"

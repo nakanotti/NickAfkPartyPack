@@ -4,7 +4,10 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.reflect.StructureModifier;
+import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
@@ -18,6 +21,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -28,11 +32,17 @@ public class PacketListener {
         playServerPlayerInfo = new PacketAdapter(Constants.plugin, PacketType.Play.Server.PLAYER_INFO) {
             @Override
             public void onPacketSending(PacketEvent event) {
-                Set<EnumWrappers.PlayerInfoAction> actions = event.getPacket().getPlayerInfoActions().read(0);
-                if (!actions.contains(EnumWrappers.PlayerInfoAction.UPDATE_DISPLAY_NAME)) return;
+                int idx = 1;
+                if (MinecraftVersion.FEATURE_PREVIEW_UPDATE.atOrAbove()) { // 1.19.3 以降
+                    Set<EnumWrappers.PlayerInfoAction> actions = event.getPacket().getPlayerInfoActions().read(0);
+                    if (!actions.contains(EnumWrappers.PlayerInfoAction.UPDATE_DISPLAY_NAME)) return;
+                } else {    // 1.19.2 以前
+                    if (event.getPacket().getPlayerInfoAction().read(0) != EnumWrappers.PlayerInfoAction.ADD_PLAYER) return;
+                    idx = 0;
+                }
                 final boolean bShowDisplayNameOverHeads = true;
                 final boolean bShowAfkTagOverHeads = Constants.config.getBoolean("show-afk-tag-over-heads");
-                List<PlayerInfoData> playerInfoDataList = event.getPacket().getPlayerInfoDataLists().read(1);
+                List<PlayerInfoData> playerInfoDataList = event.getPacket().getPlayerInfoDataLists().read(idx);
                 List<PlayerInfoData> newPlayerInfoDataList = new ArrayList<>();
                 for (PlayerInfoData pid : playerInfoDataList) {
                     if (pid == null) continue;
@@ -52,11 +62,11 @@ public class PacketListener {
                         }
                         WrappedRemoteChatSessionData rcsd = pid.getRemoteChatSessionData();
                         newPid = new PlayerInfoData(pid.getProfileId(), pid.getLatency(), pid.isListed(), pid.getGameMode(), profile, WrappedChatComponent.fromText(fullName), rcsd);
-                     }
-                     newPlayerInfoDataList.add(newPid);
+                    }
+                    newPlayerInfoDataList.add(newPid);
                 }
                 //Bukkit.getLogger().info(newPlayerInfoDataList.toString());
-                event.getPacket().getPlayerInfoDataLists().write(1, newPlayerInfoDataList);
+                event.getPacket().getPlayerInfoDataLists().write(idx, newPlayerInfoDataList);
             }
         };
 

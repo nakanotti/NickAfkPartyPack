@@ -9,7 +9,8 @@ import org.bukkit.entity.Player;
 public class CommandNick implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length > 0 && sender instanceof Player player) {
+        if (args.length > 0 && sender instanceof Player) {
+            Player player = (Player) sender;
             String nick = String.join(" ", args);
 
             Tasks.setPlayerNick(sender, player, nick);
