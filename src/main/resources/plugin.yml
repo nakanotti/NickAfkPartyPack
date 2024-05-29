@@ -21,7 +21,7 @@ commands:
 
   nicklist:
     description: List online players and their nicknames.
-    usage: /<command>
+    usage: /<command> [uuids]
     permission: nickafkpartypack.player.nicklist
 
   afk:
