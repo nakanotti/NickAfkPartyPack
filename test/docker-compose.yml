@@ -1,7 +1,7 @@
 services:
   mc:
     container_name: test
-    image: itzg/minecraft-server
+    image: itzg/minecraft-server:${TEST_TAG}
     ports:
       - 25565:25565
     volumes:
@@ -16,12 +16,13 @@ services:
       LANGUAGE: "ja_JP"
       # Server
       EULA: "TRUE"
-      TYPE: "PAPER"
-      VERSION: "1.20.4"
+      TYPE: "${TEST_TYPE}"
+      VERSION: "${TEST_VERSION}"
+      MEMORY: "4G"
       # MODS
-      MODS: "https://ci.dmulloy2.net/job/ProtocolLib/lastSuccessfulBuild/artifact/build/libs/ProtocolLib.jar"
+      #MODS: "https://ci.dmulloy2.net/job/ProtocolLib/lastSuccessfulBuild/artifact/build/libs/ProtocolLib.jar"
       #MODS_FILE: "/plugins/mods.txt"
-      REMOVE_OLD_MODS: "TRUE"
+      #REMOVE_OLD_MODS: "TRUE"
       # RCON
       ENABLE_RCON: "true"
       RCON_PASSWORD: "minecraft"
