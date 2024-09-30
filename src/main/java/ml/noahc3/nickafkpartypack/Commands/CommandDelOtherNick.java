@@ -1,5 +1,7 @@
 package ml.noahc3.nickafkpartypack.Commands;
 
+import ml.noahc3.nickafkpartypack.Util.NicknameFileConfiguration;
+import ml.noahc3.nickafkpartypack.Util.Constants;
 import ml.noahc3.nickafkpartypack.Util.Tasks;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -11,6 +13,7 @@ public class CommandDelOtherNick implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length > 0) {
+            Constants.nicknames.removeNickname(args[0]);
             Player player = Bukkit.getPlayer(args[0]);
             if (player == null) return false;
 

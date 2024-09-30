@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.UUID;
 
@@ -75,6 +76,13 @@ public class EventListener implements Listener {
 
         PersistentDataContainer data = player.getPersistentDataContainer();
         data.remove(Constants.afkKey);
+
+        // 予約済みのニックネームを設定する
+        String nick = Constants.nicknames.findOfflineNickname(player.getName());
+        if (nick != null && nick.length() > 0) {
+            Tasks.setPlayerNick(player, player, nick);
+            Constants.nicknames.setNickname(player.getName(), nick, true);
+        }
 
         updatePlayerStamps(player);
 

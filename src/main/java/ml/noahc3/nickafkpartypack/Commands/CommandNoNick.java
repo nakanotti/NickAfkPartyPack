@@ -1,5 +1,6 @@
 package ml.noahc3.nickafkpartypack.Commands;
 
+import ml.noahc3.nickafkpartypack.Util.Constants;
 import ml.noahc3.nickafkpartypack.Util.Tasks;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -12,6 +13,7 @@ public class CommandNoNick implements CommandExecutor {
         if (sender instanceof Player) {
             Player player = (Player) sender;
             Tasks.removePlayerNick(sender, player);
+            Constants.nicknames.removeNickname(player.getName());
             return true;
         }
 
