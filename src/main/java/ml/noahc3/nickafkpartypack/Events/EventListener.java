@@ -82,6 +82,14 @@ public class EventListener implements Listener {
         if (nick != null && nick.length() > 0) {
             Tasks.setPlayerNick(player, player, nick);
             Constants.nicknames.setNickname(player.getName(), nick, true);
+        } else if (data.get(Constants.nickKey, PersistentDataType.STRING) == null) {
+            final boolean bNoNickNoLogin = Constants.config.getBoolean("no-nick-no-login", true);
+            if (bNoNickNoLogin) {
+                // ニックネーム無しは、ログインさせない
+                String msg = Constants.config.getString("no-nick-no-login-msg", "No Nick, No Login.");
+                msg = msg.replaceAll("\\$\\{PLAYER\\}", player.getName());
+                player.kickPlayer(msg);
+            }
         }
 
         updatePlayerStamps(player);

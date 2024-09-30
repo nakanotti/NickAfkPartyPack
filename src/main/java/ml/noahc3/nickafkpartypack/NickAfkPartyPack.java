@@ -6,10 +6,8 @@ import ml.noahc3.nickafkpartypack.Packets.PacketListener;
 import ml.noahc3.nickafkpartypack.Util.Constants;
 import ml.noahc3.nickafkpartypack.Util.NicknameFileConfiguration;
 import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
 import java.util.HashMap;
 
 public class NickAfkPartyPack extends JavaPlugin {

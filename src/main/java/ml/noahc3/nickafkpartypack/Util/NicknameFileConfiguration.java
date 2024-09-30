@@ -2,7 +2,6 @@ package ml.noahc3.nickafkpartypack.Util;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.Base64;

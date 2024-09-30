@@ -10,7 +10,14 @@
 # afk-kick-time-seconds: 600
 #   Players will be kicked after this many seconds of being idle.
 #   Set to negative number to disable.
-
+#
+# no-nick-no-login: yes
+#   If yes, no nick to kick at login.
+#   We have to pre-assign nicknames.
+#   ex) /setothernick <player> <nickname>
+#
 show-afk-tag-over-heads: no
 auto-afk-time-seconds: 300
 afk-kick-time-seconds: 600
+no-nick-no-login: yes
+no-nick-no-login-msg: "Youtube コメントから以下のフォーマットで参加申請の上、承認してもらいましょう。\n\nJOIN ${PLAYER} [統合版なら機種名]\n\n申請済みなら承認されるのを待ちましょう。"

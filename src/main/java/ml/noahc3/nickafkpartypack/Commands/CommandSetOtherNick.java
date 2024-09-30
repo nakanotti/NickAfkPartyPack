@@ -1,6 +1,5 @@
 package ml.noahc3.nickafkpartypack.Commands;
 
-import ml.noahc3.nickafkpartypack.Util.NicknameFileConfiguration;
 import ml.noahc3.nickafkpartypack.Util.Constants;
 import ml.noahc3.nickafkpartypack.Util.Tasks;
 import org.bukkit.Bukkit;
