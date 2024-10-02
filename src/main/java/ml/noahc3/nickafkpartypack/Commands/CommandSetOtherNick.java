@@ -1,6 +1,5 @@
 package ml.noahc3.nickafkpartypack.Commands;
 
-import ml.noahc3.nickafkpartypack.Util.Constants;
 import ml.noahc3.nickafkpartypack.Util.Tasks;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -16,13 +15,7 @@ public class CommandSetOtherNick implements CommandExecutor {
         if (args.length > 1) {
             Player player = Bukkit.getPlayer(args[0]);
             String nick = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-            if (player != null) {
-                Tasks.setPlayerNick(sender, player, nick);
-                Constants.nicknames.setNickname(args[0], nick, true);
-            } else {
-                Constants.nicknames.setNickname(args[0], nick, false);
-                sender.sendMessage("プレイヤーがオフラインのため予約のみ行いました。");
-            }
+            Tasks.setPlayerNick(sender, player, args[0], nick);
             return true;
         }
 

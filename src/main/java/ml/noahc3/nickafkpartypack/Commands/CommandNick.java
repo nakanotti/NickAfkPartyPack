@@ -1,6 +1,5 @@
 package ml.noahc3.nickafkpartypack.Commands;
 
-import ml.noahc3.nickafkpartypack.Util.Constants;
 import ml.noahc3.nickafkpartypack.Util.Tasks;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,8 +13,7 @@ public class CommandNick implements CommandExecutor {
             Player player = (Player) sender;
             String nick = String.join(" ", args);
 
-            Tasks.setPlayerNick(sender, player, nick);
-            Constants.nicknames.setNickname(player.getName(), nick, true);
+            Tasks.setPlayerNick(sender, player, player.getName(), nick);
             return true;
         }
 

@@ -74,8 +74,11 @@ public class Tasks {
 
         if (player == null) return "";
 
-        PersistentDataContainer data = player.getPersistentDataContainer();
-        String nick = data.get(Constants.nickKey, PersistentDataType.STRING);
+        String nick = Constants.nicknames.findNickname(player.getName(), -1);
+        if (nick == null || nick.isEmpty()) {
+            PersistentDataContainer data = player.getPersistentDataContainer();
+            nick = data.get(Constants.nickKey, PersistentDataType.STRING);
+        }
 
         if (nick == null) displayName = WrappedGameProfile.fromPlayer(player).getName();
         else displayName = nick;
@@ -83,34 +86,48 @@ public class Tasks {
         return displayName;
     }
 
-    public static boolean setPlayerNick(CommandSender sender, Player player, String nick) {
+    public static boolean setPlayerNick(CommandSender sender, Player player, String name, String nick) {
         if (nick.length() > 16) {
-            sender.sendMessage("ニックネームは 16 文字以下にしてください。");
+            if (sender != null) sender.sendMessage("ニックネームは 16 文字以下にしてください。");
             return false;
         }
 
-        PersistentDataContainer data = player.getPersistentDataContainer();
-        data.set(Constants.nickKey, PersistentDataType.STRING, nick);
+        Constants.nicknames.setNickname(name, nick, player != null ? 1 : 0);
+        if (player != null) {
+            //PersistentDataContainer data = player.getPersistentDataContainer();
+            //data.set(Constants.nickKey, PersistentDataType.STRING, nick);
+            Tasks.refreshPlayer(player);
+        }
 
-        Tasks.refreshPlayer(player);
-
-        sender.sendMessage("ニックネームを設定しました。 '" + nick + "'");
+        if (sender != null) sender.sendMessage("ニックネームを設定しました。 '" + nick + "'");
 
         return true;
     }
 
-    public static void removePlayerNick(CommandSender sender, Player player) {
-        PersistentDataContainer data = player.getPersistentDataContainer();
-        data.remove(Constants.nickKey);
+    public static void removePlayerNick(CommandSender sender, Player player, String name) {
+        if (player != null) {
+            PersistentDataContainer data = player.getPersistentDataContainer();
+            data.remove(Constants.nickKey);
+        }
+        Constants.nicknames.removeNickname(name);
 
         Tasks.refreshPlayer(player);
 
-        sender.sendMessage("ニックネームを削除しました。");
+        if (sender != null) sender.sendMessage("ニックネームを削除しました。");
+    }
+
+    public static boolean isPlayerNicked(String name) {
+        String nick = Constants.nicknames.findNickname(name, 1);
+        return nick != null && !nick.isEmpty();
+    }
+
+    public static boolean isPlayerNickedOld(Player player) {
+        PersistentDataContainer data = player.getPersistentDataContainer();
+        return data.has(Constants.nickKey, PersistentDataType.STRING);
     }
 
     public static boolean isPlayerNicked(Player player) {
-        PersistentDataContainer data = player.getPersistentDataContainer();
-        return data.has(Constants.nickKey, PersistentDataType.STRING);
+        return isPlayerNicked(player.getName()) || isPlayerNickedOld(player);
     }
 
     public static boolean isPlayerAfk(Player player) {

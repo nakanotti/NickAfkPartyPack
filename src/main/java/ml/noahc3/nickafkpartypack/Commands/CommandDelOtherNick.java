@@ -16,7 +16,7 @@ public class CommandDelOtherNick implements CommandExecutor {
             Player player = Bukkit.getPlayer(args[0]);
             if (player == null) return false;
 
-            Tasks.removePlayerNick(sender, player);
+            Tasks.removePlayerNick(sender, player, args[0]);
             return true;
         }
 

@@ -4,7 +4,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.File;
-import java.util.Base64;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -30,16 +29,20 @@ public class NicknameFileConfiguration {
         }
     }
 
-    public boolean setNickname(String player, String nick, boolean online)
+    String getPlayerKey(String player)
+    {
+        return player.replaceFirst("^\\.", "__bedrock__"); 
+    }
+
+    public boolean setNickname(String player, String nick, int flag)
     {
         try {
-            String key = "players." + Base64.getEncoder().encodeToString(player.getBytes());
+            String key = "players." + getPlayerKey(player);
             ConfigurationSection section = s_memory.getConfigurationSection(key);
             Map<String, Object> map = section != null ? section.getValues(false) : new HashMap<String, Object>(); 
-            int flag = online ? 1 : 0;  // 0=未設定/1=設定済み
             map.put("player", player);
             map.put("nickname", nick);
-            map.put("flag", flag);
+            map.put("flag", flag);  // 0=未設定/1=設定済み
             s_memory.createSection(key, map);
             save();
             return true;
@@ -56,7 +59,7 @@ public class NicknameFileConfiguration {
             if (section == null) return false;
             Map<String, Object> map = section.getValues(false); 
             if (map == null || map.isEmpty()) return false;
-            String key = Base64.getEncoder().encodeToString(player.getBytes());
+            String key = getPlayerKey(player);
             map.remove(key);
             s_memory.createSection("players", map);
             save();
@@ -67,22 +70,21 @@ public class NicknameFileConfiguration {
         return false;
     }
 
-    public String findOfflineNickname(String player)
+    public String findNickname(String player, int flagMatch)
     {
         try {
             ConfigurationSection section = s_memory.getConfigurationSection("players");
             if (section == null) return null;
             Map<String, Object> map = section.getValues(false); 
             if (map == null || map.isEmpty()) return null;
-            String key = Base64.getEncoder().encodeToString(player.getBytes());
-            section = s_memory.getConfigurationSection("players." + key);
+            String key = "players." + getPlayerKey(player);
+            section = s_memory.getConfigurationSection(key);
             if (section == null) return null;
             Map<String, Object> entries = section.getValues(false); ;
             if (entries != null) {
                 int flag = (int) entries.get("flag");
-                if (flag == 0) {
+                if (flagMatch == -1 || flagMatch == flag) {
                     String nick = (String) entries.get("nickname");
-                    Constants.plugin.getLogger().info("New nickname: " + nick);
                     return nick;
                 }
             }
