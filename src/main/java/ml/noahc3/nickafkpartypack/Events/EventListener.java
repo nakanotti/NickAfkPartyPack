@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.UUID;
 
@@ -82,6 +83,7 @@ public class EventListener implements Listener {
         if (nick != null && nick.length() > 0) {
             Tasks.setPlayerNick(player, player, name, nick);
         } else if (Tasks.isPlayerNickedOld(player)) {
+            nick = data.get(Constants.nickKey, PersistentDataType.STRING);
             Tasks.setPlayerNick(player, player, name, nick);
         } else if (!Tasks.isPlayerNicked(name)) {
             final boolean bNoNickNoLogin = Constants.config.getBoolean("no-nick-no-login", true);

@@ -87,15 +87,13 @@ public class Tasks {
     }
 
     public static boolean setPlayerNick(CommandSender sender, Player player, String name, String nick) {
-        if (nick.length() > 16) {
+        if (nick != null && nick.length() > 16) {
             if (sender != null) sender.sendMessage("ニックネームは 16 文字以下にしてください。");
             return false;
         }
 
         Constants.nicknames.setNickname(name, nick, player != null ? 1 : 0);
         if (player != null) {
-            //PersistentDataContainer data = player.getPersistentDataContainer();
-            //data.set(Constants.nickKey, PersistentDataType.STRING, nick);
             Tasks.refreshPlayer(player);
         }
 
