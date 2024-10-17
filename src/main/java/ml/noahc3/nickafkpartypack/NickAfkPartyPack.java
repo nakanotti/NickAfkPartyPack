@@ -4,6 +4,7 @@ import ml.noahc3.nickafkpartypack.Commands.*;
 import ml.noahc3.nickafkpartypack.Events.EventListener;
 import ml.noahc3.nickafkpartypack.Packets.PacketListener;
 import ml.noahc3.nickafkpartypack.Util.Constants;
+import ml.noahc3.nickafkpartypack.Util.NicknameFileConfiguration;
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -21,6 +22,7 @@ public class NickAfkPartyPack extends JavaPlugin {
         Constants.nickKey = new NamespacedKey(Constants.plugin, "nickname");
         Constants.afkKey = new NamespacedKey(Constants.plugin, "isAfk");
         Constants.config = this.getConfig();
+        Constants.nicknames = new NicknameFileConfiguration();
         Constants.afkTimestamps = new HashMap<>();
         Constants.playerYaw = new HashMap<>();
         Constants.playerPitch = new HashMap<>();

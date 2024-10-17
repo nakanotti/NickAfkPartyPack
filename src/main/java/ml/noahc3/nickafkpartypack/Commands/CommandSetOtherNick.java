@@ -14,14 +14,12 @@ public class CommandSetOtherNick implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length > 1) {
             Player player = Bukkit.getPlayer(args[0]);
-            if (player == null) return false;
-
             String nick = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-            Tasks.setPlayerNick(sender, player, nick);
-
+            Tasks.setPlayerNick(sender, player, args[0], nick);
             return true;
         }
 
         return false;
     }
 }
+

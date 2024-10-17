@@ -1,0 +1,60 @@
+services:
+  mc:
+    container_name: test
+    image: itzg/minecraft-server:${TEST_TAG}
+    ports:
+      - 25565:25565
+    volumes:
+      - "./data:/data"
+      - "./plugins:/plugins"
+    tty: true
+    stdin_open: true
+    environment:
+      # OS
+      TZ: "Asia/Tokyo"
+      LANG: "ja_JP.UTF-8"
+      LANGUAGE: "ja_JP"
+      # Server
+      EULA: "TRUE"
+      TYPE: "${TEST_TYPE}"
+      VERSION: "${TEST_VERSION}"
+      MEMORY: "4G"
+      # MODS
+      #MODS: "https://ci.dmulloy2.net/job/ProtocolLib/lastSuccessfulBuild/artifact/build/libs/ProtocolLib.jar"
+      #MODS_FILE: "/plugins/mods.txt"
+      #REMOVE_OLD_MODS: "TRUE"
+      # RCON
+      ENABLE_RCON: "true"
+      RCON_PASSWORD: "minecraft"
+      RCON_PORT: 25575
+      # server.properties
+      OVERRIDE_SERVER_PROPERTIES: "TRUE"
+      SERVER_NAME: "test"
+      MOTD: "Test World"
+      DIFFICULTY: "normal"
+      ENABLE_WHITELIST: "FALSE"
+      ENFORCE_WHITELIST: "FALSE"
+      MAX_PLAYERS: "10"
+      MAX_WORLD_SIZE: "29999984"
+      ALLOW_NETHER: "true"
+      ENABLE_COMMAND_BLOCK: "true"
+      FORCE_GAMEMODE: "true"
+      GENERATE_STRUCTURES: "true"
+      HARDCORE: "false"
+      SNOOPER_ENABLED: "false"
+      SPAWN_ANIMALS: "true"
+      SPAWN_MONSTERS: "true"
+      SPAWN_NPCS: "true"
+      SPAWN_PROTECTION: "0"
+      SEED: ""
+      MODE: "creative"
+      PVP: "true"
+      LEVEL: "world"
+      LEVEL_TYPE: "normal"
+      ONLINE_MODE: "TRUE"
+      ALLOW_FLIGHT: "TRUE"
+      # Resource Pack
+      RESOURCE_PACK_ENFORCE: "FALSE"
+      RESOURCE_PACK: ""
+      RESOURCE_PACK_SHA1: ""
+      ENFORCE_SECURE_PROFILE: "FALSE"

@@ -9,8 +9,9 @@ import org.bukkit.entity.Player;
 public class CommandNoNick implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (sender instanceof Player player) {
-            Tasks.removePlayerNick(sender, player);
+        if (sender instanceof Player) {
+            Player player = (Player) sender;
+            Tasks.removePlayerNick(sender, player, player.getName());
             return true;
         }
 

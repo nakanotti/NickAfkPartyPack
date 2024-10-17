@@ -11,16 +11,19 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.UUID;
 
 public class EventListener implements Listener {
 
     private static int SlowTickTaskId;
+    private static boolean bRequestRefresh;
 
     public static void init() {
         SlowTickTaskId = Constants.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(Constants.plugin, EventListener::SlowTick, 100, 10);
         Constants.plugin.getServer().getPluginManager().registerEvents(new EventListener(), Constants.plugin);
+        bRequestRefresh = false;
     }
 
     public static void deinit() {
@@ -28,24 +31,37 @@ public class EventListener implements Listener {
     }
 
     public static void SlowTick() {
-        long afkTime = Constants.config.getInt("auto-afk-time-seconds") * 1000L;
-        long kickTime = Constants.config.getInt("afk-kick-time-seconds") * 1000L;
+        final long afkTime = Constants.config.getInt("auto-afk-time-seconds") * 1000L;
+        final long kickTime = Constants.config.getInt("afk-kick-time-seconds") * 1000L;
+        final long now = System.currentTimeMillis();
 
-        for(UUID u : Constants.afkTimestamps.keySet()) {
+        // fixed for concurrent modification.
+        UUID[] uuids = Constants.afkTimestamps.keySet().toArray(new UUID[0]);
+        for(UUID u : uuids) {
             Player player = Bukkit.getPlayer(u);
             if (player == null) continue;
 
-            if (player.getLocation().getYaw() != Constants.playerYaw.get(player.getUniqueId())
-                    || player.getLocation().getPitch() != Constants.playerPitch.get(player.getUniqueId())) {
+            if (player.getLocation().getYaw() != Constants.playerYaw.get(u) ||
+                player.getLocation().getPitch() != Constants.playerPitch.get(u)) {
                 updatePlayerStamps(player);
             }
 
-            if (kickTime >= 0 && System.currentTimeMillis() > Constants.afkTimestamps.get(u) + kickTime) {
-                player.kickPlayer("You have been AFK for too long.");
-            } else if (afkTime >= 0 && System.currentTimeMillis() > Constants.afkTimestamps.get(u) + afkTime) {
+            boolean bUpdate = false;
+            if (kickTime >= 0 && now > Constants.afkTimestamps.get(u) + kickTime) {
+                if (!player.hasPermission("nickafkpartypack.op.nokick")) {
+                    player.kickPlayer("You have been AFK for too long.");
+                    bUpdate = true;
+                }
+            } else if (afkTime >= 0 && now > Constants.afkTimestamps.get(u) + afkTime) {
                 Tasks.setAfk(player, true);
+                bUpdate = true;
+            }
+            if (!bUpdate && bRequestRefresh) {
+                // 遅延リフレッシュ
+                Tasks.refreshPlayer(player);
             }
         }
+        bRequestRefresh = false;
     }
 
     @EventHandler (ignoreCancelled = true)
@@ -62,6 +78,24 @@ public class EventListener implements Listener {
 
         PersistentDataContainer data = player.getPersistentDataContainer();
         data.remove(Constants.afkKey);
+
+        // 予約済みのニックネームを設定する
+        String name = player.getName();
+        String nick = Constants.nicknames.findNickname(name, 0);
+        if (nick != null && nick.length() > 0) {
+            Tasks.setPlayerNick(player, player, name, nick);
+        } else if (Tasks.isPlayerNickedOld(player)) {
+            nick = data.get(Constants.nickKey, PersistentDataType.STRING);
+            Tasks.setPlayerNick(player, player, name, nick);
+        } else if (!Tasks.isPlayerNicked(name)) {
+            final boolean bNoNickNoLogin = Constants.config.getBoolean("no-nick-no-login", true);
+            if (bNoNickNoLogin) {
+                // ニックネーム無しは、ログインさせない
+                String msg = Constants.config.getString("no-nick-no-login-msg", "No Nick, No Login.");
+                msg = msg.replaceAll("\\$\\{PLAYER\\}", player.getName());
+                player.kickPlayer(msg);
+            }
+        }
 
         updatePlayerStamps(player);
 
@@ -123,5 +157,9 @@ public class EventListener implements Listener {
         Constants.afkTimestamps.remove(player.getUniqueId());
         Constants.playerYaw.remove(player.getUniqueId());
         Constants.playerPitch.remove(player.getUniqueId());
+    }
+
+    public static void requestRefresh() {
+        bRequestRefresh = true;
     }
 }

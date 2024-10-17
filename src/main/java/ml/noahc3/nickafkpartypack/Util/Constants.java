@@ -12,7 +12,9 @@ public class Constants {
     public static NamespacedKey nickKey;
     public static NamespacedKey afkKey;
     public static FileConfiguration config;
+    public static NicknameFileConfiguration nicknames;
     public static HashMap<UUID, Long> afkTimestamps;
     public static HashMap<UUID, Float> playerYaw;
     public static HashMap<UUID, Float> playerPitch;
 }
+
