@@ -35,12 +35,14 @@ public class EventListener implements Listener {
         final long kickTime = Constants.config.getInt("afk-kick-time-seconds") * 1000L;
         final long now = System.currentTimeMillis();
 
-        for(UUID u : Constants.afkTimestamps.keySet()) {
+        // fixed for concurrent modification.
+        UUID[] uuids = Constants.afkTimestamps.keySet().toArray(new UUID[0]);
+        for(UUID u : uuids) {
             Player player = Bukkit.getPlayer(u);
             if (player == null) continue;
 
-            if (player.getLocation().getYaw() != Constants.playerYaw.get(player.getUniqueId())
-                    || player.getLocation().getPitch() != Constants.playerPitch.get(player.getUniqueId())) {
+            if (player.getLocation().getYaw() != Constants.playerYaw.get(u) ||
+                player.getLocation().getPitch() != Constants.playerPitch.get(u)) {
                 updatePlayerStamps(player);
             }
 
